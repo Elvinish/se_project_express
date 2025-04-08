@@ -2,18 +2,32 @@ const ClothingItem = require("../models/clothingItem");
 const { STATUS_CODES } = require("../utils/constants");
 
 const createItem = (req, res) => {
-  console.log(req);
-  console.log(req.body);
+  const { name, weather, imageUrl } = req.body;
+  if (!req.user) {
+    return res.status(STATUS_CODES.BAD_REQUEST).json({
+      message: "User authentication required",
+    });
+  }
 
-  const { name, weather, imageURL } = req.body;
+  if (!name || name.length < 2 || name.length > 30) {
+    return res
+      .status(STATUS_CODES.BAD_REQUEST)
+      .json({ message: "Invalid data provided" });
+  }
 
-  ClothingItem.create({ name, weather, imageURL })
+  const owner = req.user._id;
+
+  ClothingItem.create({ name, weather, imageUrl, owner })
     .then((item) => {
-      console.log(item);
-      res.send({ data: item });
+      res.status(STATUS_CODES.CREATED).send({ data: item });
     })
     .catch((err) => {
-      res
+      if (err.name === "ValidationError") {
+        return res
+          .status(STATUS_CODES.BAD_REQUEST)
+          .send({ message: "Invalid data provided" });
+      }
+      return res
         .status(STATUS_CODES.INTERNAL_SERVER_ERROR)
         .send({ message: "Error from createItem", err });
     });
@@ -31,9 +45,9 @@ const getItems = (req, res) => {
 
 const updateItem = (req, res) => {
   const { itemId } = req.params;
-  const { imageURL } = req.body;
+  const { imageUrl } = req.body;
 
-  ClothingItem.findByIdAndUpdate(itemId, { $set: { imageURL } })
+  ClothingItem.findByIdAndUpdate(itemId, { $set: { imageUrl } })
     .orFail()
     .then((item) => res.status(STATUS_CODES.OK).send({ data: item }))
     .catch((err) => {
@@ -46,14 +60,29 @@ const updateItem = (req, res) => {
 const deleteItem = (req, res) => {
   const { itemId } = req.params;
 
-  console.log("itemId");
   ClothingItem.findByIdAndDelete(itemId)
-    .orFail()
-    .then((item) => res.status(STATUS_CODES.NO_CONTENT).send({}))
+
+    .then((item) => {
+      if (!item) {
+        return res
+          .status(STATUS_CODES.NOT_FOUND)
+          .json({ message: "item not found" });
+      }
+      res.status(STATUS_CODES.OK).json({ data: item });
+    })
     .catch((err) => {
-      res
+      if (err.name === "DocumentNotFoundError") {
+        return res
+          .status(STATUS_CODES.NOT_FOUND)
+          .json({ message: "Item not found" });
+      } else if (err.name === "CastError") {
+        return res
+          .status(STATUS_CODES.BAD_REQUEST)
+          .json({ message: "Invalid item ID format" });
+      }
+      return res
         .status(STATUS_CODES.INTERNAL_SERVER_ERROR)
-        .send({ message: "Error from deleteItem", err });
+        .json({ message: "Error from deleteItem", err });
     });
 };
 
