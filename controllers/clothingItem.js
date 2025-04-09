@@ -16,9 +16,9 @@ const createItem = (req, res) => {
       .json({ message: "Invalid data provided" });
   }
 
-  const owner = req.user._id;
+  const { _id: userId } = req.user;
 
-  return ClothingItem.create({ name, weather, imageUrl, owner })
+  return ClothingItem.create({ name, weather, imageUrl, owner: userId })
     .then((item) => {
       res.status(STATUS_CODES.CREATED).send({ data: item });
     })

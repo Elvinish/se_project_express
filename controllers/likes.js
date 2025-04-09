@@ -3,6 +3,7 @@ const ClothingItem = require("../models/clothingItem");
 const { STATUS_CODES } = require("../utils/constants");
 
 const likeItem = (req, res) => {
+  const { _id: userId } = req.user;
   console.log("User ID:", req.user?._id);
   const { itemId } = req.params;
   console.log("Received item ID:", itemId);
@@ -16,7 +17,7 @@ const likeItem = (req, res) => {
     itemId,
     {
       $addToSet: {
-        likes: req.user._id,
+        likes: userId,
       },
     },
     { new: true }
@@ -54,6 +55,7 @@ const likeItem = (req, res) => {
 };
 
 const dislikeItem = (req, res) => {
+  const { _id: userId } = req.user;
   console.log("User ID:", req.user?._id);
   const { itemId } = req.params;
   console.log("Received item ID:", itemId);
@@ -65,7 +67,7 @@ const dislikeItem = (req, res) => {
 
   return ClothingItem.findByIdAndUpdate(
     itemId,
-    { $pull: { likes: req.user._id } },
+    { $pull: { likes: userId } },
     { new: true }
   )
     .then((item) => {
