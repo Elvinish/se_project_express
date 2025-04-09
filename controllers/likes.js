@@ -22,9 +22,9 @@ const likeItem = (req, res) => {
     { new: true }
   )
     .orFail(() => {
-      const error = new Error("Item not found");
-      error.statusCode = STATUS_CODES.NOT_FOUND;
-      throw error;
+      throw Object.assign(new Error("Item not found"), {
+        statusCode: STATUS_CODES.NOT_FOUND,
+      });
     })
     .then((item) => {
       if (!item) {

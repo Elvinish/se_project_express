@@ -2,6 +2,7 @@ const ClothingItem = require("../models/clothingItem");
 const { STATUS_CODES } = require("../utils/constants");
 
 const createItem = (req, res) => {
+  console.log("createItem controller hit");
   const { name, weather, imageUrl } = req.body;
   if (!req.user) {
     return res.status(STATUS_CODES.BAD_REQUEST).json({
@@ -75,7 +76,8 @@ const deleteItem = (req, res) => {
         return res
           .status(STATUS_CODES.NOT_FOUND)
           .json({ message: "Item not found" });
-      } else if (err.name === "CastError") {
+      }
+      if (err.name === "CastError") {
         return res
           .status(STATUS_CODES.BAD_REQUEST)
           .json({ message: "Invalid item ID format" });
