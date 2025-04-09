@@ -44,7 +44,8 @@ const getUser = (req, res) => {
         return res
           .status(STATUS_CODES.NOT_FOUND)
           .send({ message: err.message });
-      } else if (err.name === "CastError") {
+      }
+      if (err.name === "CastError") {
         return res
           .status(STATUS_CODES.BAD_REQUEST)
           .send({ message: err.message });

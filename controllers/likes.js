@@ -12,7 +12,7 @@ const likeItem = (req, res) => {
     return res.status(400).send({ message: "Invalid item ID format" });
   }
 
-  ClothingItem.findByIdAndUpdate(
+  return ClothingItem.findByIdAndUpdate(
     itemId,
     {
       $addToSet: {
@@ -21,11 +21,11 @@ const likeItem = (req, res) => {
     },
     { new: true }
   )
-    // .orFail(() => {
-    //   const error = new Error("Item not found");
-    //   error.statusCode = STATUS_CODES.NOT_FOUND;
-    //   throw error;
-    // })
+    .orFail(() => {
+      const error = new Error("Item not found");
+      error.statusCode = STATUS_CODES.NOT_FOUND;
+      throw error;
+    })
     .then((item) => {
       if (!item) {
         return res
@@ -63,7 +63,7 @@ const dislikeItem = (req, res) => {
     return res.status(400).send({ message: "Invalid item ID format" });
   }
 
-  ClothingItem.findByIdAndUpdate(
+  return ClothingItem.findByIdAndUpdate(
     itemId,
     { $pull: { likes: req.user._id } },
     { new: true }
@@ -83,7 +83,7 @@ const dislikeItem = (req, res) => {
       if (err.name === "CastError") {
         return res
           .status(STATUS_CODES.BAD_REQUEST)
-          .send({ message: "invalid Item ID format" });
+          .send({ message: "invalid item ID format" });
       }
       return res
         .status(STATUS_CODES.INTERNAL_SERVER_ERROR)

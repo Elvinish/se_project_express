@@ -17,7 +17,7 @@ const createItem = (req, res) => {
 
   const owner = req.user._id;
 
-  ClothingItem.create({ name, weather, imageUrl, owner })
+  return ClothingItem.create({ name, weather, imageUrl, owner })
     .then((item) => {
       res.status(STATUS_CODES.CREATED).send({ data: item });
     })
@@ -68,7 +68,7 @@ const deleteItem = (req, res) => {
           .status(STATUS_CODES.NOT_FOUND)
           .json({ message: "item not found" });
       }
-      res.status(STATUS_CODES.OK).json({ data: item });
+      return res.status(STATUS_CODES.OK).json({ data: item });
     })
     .catch((err) => {
       if (err.name === "DocumentNotFoundError") {
