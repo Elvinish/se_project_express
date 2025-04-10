@@ -10,12 +10,6 @@ const createItem = (req, res) => {
     });
   }
 
-  if (!name || name.length < 2 || name.length > 30) {
-    return res
-      .status(STATUS_CODES.BAD_REQUEST)
-      .json({ message: "Invalid data provided" });
-  }
-
   const { _id: userId } = req.user;
 
   return ClothingItem.create({ name, weather, imageUrl, owner: userId })

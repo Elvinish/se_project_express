@@ -11,7 +11,7 @@ router.use("/items", clothingItem);
 // router.use("/", likeRouter);
 
 router.use((req, res) => {
-  res.status(STATUS_CODES.BAD_REQUEST).send({ message: "Router not found" });
+  res.status(STATUS_CODES.NOT_FOUND).send({ message: "Router not found" });
 });
 
 module.exports = router;
