@@ -30,7 +30,7 @@ const createItem = (req, res) => {
       }
       return res
         .status(STATUS_CODES.INTERNAL_SERVER_ERROR)
-        .send({ message: "Error from createItem", err });
+        .send({ message: "Error from createItem" });
     });
 };
 
@@ -40,21 +40,7 @@ const getItems = (req, res) => {
     .catch((err) => {
       res
         .status(STATUS_CODES.INTERNAL_SERVER_ERROR)
-        .send({ message: "Error from getItems", err });
-    });
-};
-
-const updateItem = (req, res) => {
-  const { itemId } = req.params;
-  const { imageUrl } = req.body;
-
-  ClothingItem.findByIdAndUpdate(itemId, { $set: { imageUrl } })
-    .orFail()
-    .then((item) => res.status(STATUS_CODES.OK).send({ data: item }))
-    .catch((err) => {
-      res
-        .status(STATUS_CODES.INTERNAL_SERVER_ERROR)
-        .send({ message: "Error from updateItem", err });
+        .send({ message: "Error from getItems" });
     });
 };
 
@@ -84,8 +70,8 @@ const deleteItem = (req, res) => {
       }
       return res
         .status(STATUS_CODES.INTERNAL_SERVER_ERROR)
-        .json({ message: "Error from deleteItem", err });
+        .json({ message: "Error from deleteItem" });
     });
 };
 
-module.exports = { createItem, getItems, updateItem, deleteItem };
+module.exports = { createItem, getItems, deleteItem };
