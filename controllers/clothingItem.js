@@ -37,7 +37,7 @@ const createItem = (req, res) => {
 const getItems = (req, res) => {
   ClothingItem.find({})
     .then((items) => res.status(STATUS_CODES.OK).send(items))
-    .catch((err) => {
+    .catch(() => {
       res
         .status(STATUS_CODES.INTERNAL_SERVER_ERROR)
         .send({ message: "Error from getItems" });
