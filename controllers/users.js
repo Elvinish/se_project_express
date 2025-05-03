@@ -93,11 +93,11 @@ const login = (req, res) => {
       });
       res.status(STATUS_CODES.OK).send({ token });
     })
-    .catch((err) => {
-      return res
+    .catch(() =>
+      res
         .status(STATUS_CODES.UNAUTHORIZED)
-        .send({ message: "Incorrect email or password" });
-    });
+        .send({ message: "Incorrect email or password" })
+    );
 };
 
 const updateCurrentUser = (req, res) => {
@@ -115,8 +115,10 @@ const updateCurrentUser = (req, res) => {
           .status(STATUS_CODES.NOT_FOUND)
           .send({ message: "User not found" });
       }
-      const { _id, email, avatar, name } = user;
-      return res.status(STATUS_CODES.OK).send({ _id, email, avatar, name });
+      const { _id, email, avatar: updatedAvatar, name: updatedName } = user;
+      return res
+        .status(STATUS_CODES.OK)
+        .send({ _id, email, avatar: updatedAvatar, name: updatedName });
     })
     .catch((err) => {
       if (err.name === "ValidationError") {
