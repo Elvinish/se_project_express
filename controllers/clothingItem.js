@@ -41,21 +41,30 @@ const getItems = (req, res) => {
 const deleteItem = (req, res) => {
   const { itemId } = req.params;
 
-  ClothingItem.findByIdAndDelete(itemId)
+  ClothingItem.findById(itemId)
 
     .then((item) => {
       if (!item) {
+        throw new Error("NotFound");
+      }
+      if (item.owner.toString() !== req.user._id.toString()) {
+        throw new Error("Forbidden");
+      }
+      return ClothingItem.findByIdAndDelete(itemId);
+    })
+    .then((item) => {
+      return res.status(STATUS_CODES.OK).json({ data: item });
+    })
+    .catch((err) => {
+      if (err.message === "NotFound") {
         return res
           .status(STATUS_CODES.NOT_FOUND)
           .json({ message: "item not found" });
       }
-      return res.status(STATUS_CODES.OK).json({ data: item });
-    })
-    .catch((err) => {
-      if (err.name === "DocumentNotFoundError") {
+      if (err.message === "Forbidden") {
         return res
-          .status(STATUS_CODES.NOT_FOUND)
-          .json({ message: "Item not found" });
+          .status(STATUS_CODES.FORBIDDEN)
+          .json({ message: "You don't have permission to delete this item" });
       }
       if (err.name === "CastError") {
         return res

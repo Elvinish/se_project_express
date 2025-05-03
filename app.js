@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const mainRouter = require("./routes/index");
+const cors = require("cors");
 
 const app = express();
 const { PORT = 3001 } = process.env;
@@ -14,13 +15,7 @@ mongoose
     console.log("DB Connection Error:", error);
   });
 
-// Inline Authentication Middleware
-app.use((req, res, next) => {
-  req.user = { _id: "67ecc9a8c0b650be7563670d" };
-
-  next(); // Move to the next middleware or route
-});
-
+app.use(cors());
 app.use(express.json());
 
 app.use("/", mainRouter);
