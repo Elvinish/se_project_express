@@ -52,9 +52,7 @@ const deleteItem = (req, res) => {
       }
       return ClothingItem.findByIdAndDelete(itemId);
     })
-    .then((item) => {
-      return res.status(STATUS_CODES.OK).json({ data: item });
-    })
+    .then((item) => res.status(STATUS_CODES.OK).json({ data: item }))
     .catch((err) => {
       if (err.message === "NotFound") {
         return res

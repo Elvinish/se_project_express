@@ -1,9 +1,7 @@
-const user = require("../models/user");
-const User = require("../models/user");
-const { use } = require("../routes/clothingItem");
-const { STATUS_CODES } = require("../utils/constants");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const User = require("../models/user");
+const { STATUS_CODES } = require("../utils/constants");
 const { JWT_SECRET } = require("../utils/config");
 
 const getUsers = (req, res) => {
@@ -22,9 +20,7 @@ const createUser = (req, res) => {
 
   bcrypt
     .hash(password, 10)
-    .then((hash) => {
-      return User.create({ name, avatar, email, password: hash });
-    })
+    .then((hash) => User.create({ name, avatar, email, password: hash }))
     .then((user) => {
       res.status(STATUS_CODES.CREATED).send({
         name: user.name,
@@ -81,7 +77,7 @@ const getCurrentUser = (req, res) => {
     });
 };
 
-const login = (req, res, next) => {
+const login = (req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
