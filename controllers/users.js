@@ -4,17 +4,6 @@ const User = require("../models/user");
 const { STATUS_CODES } = require("../utils/constants");
 const { JWT_SECRET } = require("../utils/config");
 
-const getUsers = (req, res) => {
-  User.find({})
-    .then((users) => res.status(STATUS_CODES.OK).send(users))
-    .catch((err) => {
-      console.error(err);
-      return res
-        .status(STATUS_CODES.INTERNAL_SERVER_ERROR)
-        .send({ message: "An error has occurred on the server" });
-    });
-};
-
 const createUser = (req, res) => {
   const { name, avatar, email, password } = req.body;
 
@@ -93,11 +82,16 @@ const login = (req, res) => {
       });
       res.status(STATUS_CODES.OK).send({ token });
     })
-    .catch(() =>
-      res
-        .status(STATUS_CODES.UNAUTHORIZED)
-        .send({ message: "Incorrect email or password" })
-    );
+    .catch((err) => {
+      if (err.message === "Incorrect email or password") {
+        return res
+          .status(STATUS_CODES.UNAUTHORIZED)
+          .send({ message: "Incorrect email or password" });
+      }
+      return res
+        .status(STATUS_CODES.INTERNAL_SERVER_ERROR)
+        .send({ message: "An error occurred on the server" });
+    });
 };
 
 const updateCurrentUser = (req, res) => {
@@ -133,7 +127,6 @@ const updateCurrentUser = (req, res) => {
 };
 
 module.exports = {
-  getUsers,
   createUser,
   getCurrentUser,
   login,
