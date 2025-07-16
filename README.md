@@ -36,6 +36,13 @@ The project is structured to support future front-end integration and eventual d
 
 ---
 
+## Deployment
+
+- Frontend: https://wtwrElvin.twilightparadox.com
+- Backend API: https://api.wtwrElvin.twilightparadox.com
+
+---
+
 ## 📂 Project Structure
 
 🧑‍💻 Author
