@@ -60,6 +60,30 @@ const validateLoginBody = celebrate({
   }),
 });
 
+const validateItemId = celebrate({
+  params: Joi.object().keys({
+    itemId: Joi.string().hex().length(24).required().messages({
+      "string.hex": "Item ID must be a valid hex string",
+      "string.length": "Item ID must be 24 characters long",
+      "string.empty": "Item ID is required",
+    }),
+  }),
+});
+
+const validateUserProfileUpdate = celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().min(2).max(30).required().messages({
+      "string.min": "Name must be at least 2 characters",
+      "string.max": "Name must be no more than 30 characters",
+      "string.empty": "Name is required",
+    }),
+    avatar: Joi.string().uri().required().messages({
+      "string.uri": "Avatar must be a valid URL",
+      "string.empty": "Avatar URL is required",
+    }),
+  }),
+});
+
 // ✅ 4. Validate MongoDB ID
 const validateId = celebrate({
   params: Joi.object().keys({
@@ -77,4 +101,6 @@ module.exports = {
   validateSignupBody,
   validateLoginBody,
   validateId,
+  validateItemId,
+  validateUserProfileUpdate,
 };

@@ -1,13 +1,15 @@
 const ClothingItem = require("../models/clothingItem");
 const { STATUS_CODES } = require("../utils/constants");
+const {
+  BadRequestError,
+  NotFoundError,
+  ForbiddenError,
+} = require("../utils/errors");
 
-const createItem = (req, res) => {
-  console.log("createItem controller hit");
+const createItem = (req, res, next) => {
   const { name, weather, imageUrl } = req.body;
   if (!req.user) {
-    return res.status(STATUS_CODES.BAD_REQUEST).json({
-      message: "User authentication required",
-    });
+    return next(new BadRequestError("User authentication required"));
   }
 
   const { _id: userId } = req.user;
@@ -18,60 +20,40 @@ const createItem = (req, res) => {
     })
     .catch((err) => {
       if (err.name === "ValidationError") {
-        return res
-          .status(STATUS_CODES.BAD_REQUEST)
-          .send({ message: "Invalid data provided" });
+        return next(new BadRequestError("Invalid data provided"));
       }
-      return res
-        .status(STATUS_CODES.INTERNAL_SERVER_ERROR)
-        .send({ message: "Error from createItem" });
+      return next(err);
     });
 };
 
-const getItems = (req, res) => {
+const getItems = (req, res, next) => {
   ClothingItem.find({})
     .then((items) => res.status(STATUS_CODES.OK).send(items))
-    .catch(() => {
-      res
-        .status(STATUS_CODES.INTERNAL_SERVER_ERROR)
-        .send({ message: "Error from getItems" });
-    });
+    .catch(next);
 };
 
-const deleteItem = (req, res) => {
+const deleteItem = (req, res, next) => {
   const { itemId } = req.params;
 
   ClothingItem.findById(itemId)
 
     .then((item) => {
       if (!item) {
-        throw new Error("NotFound");
+        throw new NotFoundError("Item not found");
       }
       if (item.owner.toString() !== req.user._id.toString()) {
-        throw new Error("Forbidden");
+        throw new ForbiddenError(
+          "You don't have permission to delete this item"
+        );
       }
       return ClothingItem.findByIdAndDelete(itemId);
     })
     .then((item) => res.status(STATUS_CODES.OK).json({ data: item }))
     .catch((err) => {
-      if (err.message === "NotFound") {
-        return res
-          .status(STATUS_CODES.NOT_FOUND)
-          .json({ message: "item not found" });
-      }
-      if (err.message === "Forbidden") {
-        return res
-          .status(STATUS_CODES.FORBIDDEN)
-          .json({ message: "You don't have permission to delete this item" });
-      }
       if (err.name === "CastError") {
-        return res
-          .status(STATUS_CODES.BAD_REQUEST)
-          .json({ message: "Invalid item ID format" });
+        return next(new BadRequestError("Invalid item ID format"));
       }
-      return res
-        .status(STATUS_CODES.INTERNAL_SERVER_ERROR)
-        .json({ message: "Error from deleteItem" });
+      return next(err);
     });
 };
 
