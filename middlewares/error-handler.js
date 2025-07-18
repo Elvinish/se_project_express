@@ -2,6 +2,7 @@ const { STATUS_CODES } = require("../utils/constants");
 
 function errorHandler(err, req, res, next) {
   console.error(err.stack || err.message);
+  console.log("DEBUG ERROR OBJECT:", err);
 
   const statusCode = err.statusCode || STATUS_CODES.INTERNAL_SERVER_ERROR;
 
