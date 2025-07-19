@@ -1,7 +1,8 @@
 const mongoose = require("mongoose");
 const ClothingItem = require("../models/clothingItem");
 const { STATUS_CODES } = require("../utils/constants");
-const { BadRequestError, NotFoundError } = require("../utils/errors");
+const BadRequestError = require("../utils/errors/BadRequestError");
+const NotFoundError = require("../utils/errors/NotFoundError");
 
 const likeItem = (req, res, next) => {
   const { _id: userId } = req.user;

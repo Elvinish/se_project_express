@@ -1,10 +1,8 @@
 const ClothingItem = require("../models/clothingItem");
 const { STATUS_CODES } = require("../utils/constants");
-const {
-  BadRequestError,
-  NotFoundError,
-  ForbiddenError,
-} = require("../utils/errors");
+const BadRequestError = require("../utils/errors/BadRequestError");
+const ForbiddenError = require("../utils/errors/ForbiddenError");
+const NotFoundError = require("../utils/errors/NotFoundError");
 
 const createItem = (req, res, next) => {
   const { name, weather, imageUrl } = req.body;
