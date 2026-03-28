@@ -14,6 +14,10 @@ const NotFoundError = require("../utils/errors/NotFoundError");
 router.post("/signin", validateLoginBody, login);
 router.post("/signup", validateSignupBody, createUser);
 
+router.get("/", (req, res) => {
+  res.send("Server is working");
+});
+
 router.use("/items", clothingItem);
 router.use("/users", userRouter);
 router.use("/items/:itemId/likes", auth, likeRouter);
